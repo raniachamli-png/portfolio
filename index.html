@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rania Chamli | AI Developer</title>
+    <meta name="description" content="Portfolio of Rania Chamli, an AI Student and Developer passionate about intelligent solutions.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#050505',
+                        darker: '#000000',
+                        neon: {
+                            blue: '#10b981', // Elegant Emerald Green
+                            purple: '#047857' // Deep Dark Green
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #050505; 
+            color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        /* Glassmorphism Classes */
+        .glass { 
+            background: rgba(20, 20, 30, 0.6); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 30, 45, 0.6), rgba(15, 15, 25, 0.8));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(9, 66, 47, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Neon Text and Shadows */
+        .text-gradient {
+            background: linear-gradient(to right, #095e41, #047857);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .neon-text-blue { text-shadow: 0 0 15px rgba(11, 123, 86, 0.6); }
+        .neon-shadow-blue { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        .neon-shadow-purple { box-shadow: 0 0 20px rgba(4, 120, 87, 0.3); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #065f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+
+        /* Typing cursor */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Background grid */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+    </style>
+
+    <!-- React & Babel CDNs -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Framer Motion CDN requires a UMD build that exports window.Motion -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    
+    <!-- Three.js and Vanta.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    
+    <!-- Vanilla Tilt for 3D Cards -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+</head>
+<body class="antialiased selection:bg-neon-blue selection:text-dark">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        // --- Data Definitions ---
+        const skillsData = [
+            { category: "Programming", icon: "fa-code", items: [{name:"Python", progress:90}, {name:"C", progress:75}, {name:"SQL", progress:85}] },
+            { category: "AI & Data Science", icon: "fa-brain", items: [{name:"Machine Learning", progress:85}, {name:"Computer Vision", progress:80}, {name:"EDA", progress:90}, {name:"Feature Eng", progress:85}] },
+            { category: "Tools", icon: "fa-wrench", items: [{name:"Pandas", progress:95}, {name:"NumPy", progress:90}, {name:"OpenCV", progress:80}, {name:"VS Code", progress:90}, {name:"Linux", progress:75}] },
+            { category: "Databases", icon: "fa-database", items: [{name:"SQL", progress:90}, {name:"MERISE", progress:85}, {name:"UML", progress:80}, {name:"DBeaver", progress:85}] }
+        ];
+
+        const projectsData = [
+            { id: 1, title: "Data Analysis Project", category: "Data", icon: "fa-chart-bar", desc: "End-to-end data pipeline involving data cleaning, exploratory data analysis (EDA), and interactive visualization.", stack: ["Python", "Pandas", "Matplotlib"] },
+            { id: 2, title: "Machine Learning Predictor", category: "AI", icon: "fa-robot", desc: "Implementation and comparative study of KNN, Random Forest, and Decision Tree with evaluation metrics tracking.", stack: ["Scikit-Learn", "Python", "ML"] },
+            { id: 3, title: "Emotion Detection", category: "Vision", icon: "fa-face-smile", desc: "Real-time emotion detection system using advanced image processing and deep learning techniques.", stack: ["OpenCV", "TensorFlow", "Vision"] },
+            { id: 4, title: "Eye Tracking App", category: "Vision", icon: "fa-eye", desc: "Real-time gaze tracking utility built for accessibility research utilizing OpenCV and Haar Cascades.", stack: ["OpenCV", "Python", "C++"] }
+        ];
+
+        const experienceData = [
+            { id: 1, role: "Internship", company: "Ministry of Equipment and Water", date: "2025", desc: "Administrative & budget data handling. Tender management and large-scale data analysis." },
+            { id: 2, role: "Media Manager", company: "ThinkCraft Club", date: "2025 - Present", desc: "Social media management, strategy planning, and content creation for tech events." },
+            { id: 3, role: "EST Representative", company: "Orientation Forum", date: "2025", desc: "Student guidance and presentations to hundreds of prospective students." }
+        ];
+
+        const certsData = [
+            { title: "Python Essentials", issuer: "Cisco Networking Academy", color: "from-blue-500 to-cyan-500" },
+            { title: "Machine Learning in Python", issuer: "365 Data Science", color: "from-purple-500 to-pink-500" },
+            { title: "AI for Beginners", issuer: "HP LIFE", color: "from-green-400 to-emerald-600" },
+            { title: "Data Cleaning with pandas", issuer: "365 Data Science", color: "from-orange-500 to-red-500" }
+        ];
+
+        const languagesData = [
+            { lang: "French", level: "Bilingual / Native", val: 100 },
+            { lang: "English", level: "Professional", val: 85 }
+        ];
+
+        // --- Components ---
+
+        // Reusable Section fade-in wrapper
+        const FadeInSection = ({ children, className = "", id = "" }) => {
+            return (
+                <motion.section
+                    id={id}
+                    className={`py-20 relative z-10 ${className}`}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6 }}
+                >
+                    {children}
+                </motion.section>
+            );
+        };
+
+        const NavBar = ({ isDark, setDark }) => {
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass py-3' : 'bg-transparent py-5'}`}>
+                    <div className="container mx-auto px-6 flex justify-between items-center">
+                        <a href="#" className="font-display font-bold text-2xl tracking-tighter">
+                            <span className="text-white">RANIA</span>
+                            <span className="text-neon-blue">.AI</span>
+                        </a>
+                        <div className="hidden md:flex space-x-8 items-center text-sm font-semibold tracking-wide">
+                            <a href="#about" className="hover:text-neon-blue transition-colors">About</a>
+                            <a href="#skills" className="hover:text-neon-blue transition-colors">Skills</a>
+                            <a href="#projects" className="hover:text-neon-blue transition-colors">Projects</a>
+                            <a href="#experience" className="hover:text-neon-blue transition-colors">Experience</a>
+                            <a href="#contact" className="hover:text-neon-blue transition-colors">Contact</a>
+                            <button onClick={() => setDark(!isDark)} className="p-2 rounded-full hover:bg-white/10 transition">
+                                <i className={`fa-solid ${isDark ? 'fa-sun text-yellow-300' : 'fa-moon text-blue-300'}`}></i>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            );
+        };
+
+        const Hero = () => {
+            const [text, setText] = useState("");
+            const fullText = "Développeuse en Intelligence Artificielle";
+            const vantaRef = useRef(null);
+            
+            useEffect(() => {
+                let currentIndex = 0;
+                const interval = setInterval(() => {
+                    if (currentIndex <= fullText.length) {
+                        setText(fullText.slice(0, currentIndex));
+                        currentIndex++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 100);
+                
+                let vantaEffect;
+                if (!vantaEffect && window.VANTA) {
+                    vantaEffect = window.VANTA.NET({
+                        el: vantaRef.current,
+                        mouseControls: true,
+                        touchControls: true,
+                        gyroControls: false,
+                        minHeight: 200.00,
+                        minWidth: 200.00,
+                        scale: 1.00,
+                        scaleMobile: 1.00,
+                        color: 0x047857, // Dark Green
+                        backgroundColor: 0x050505, // Black Background
+                        points: 13.00,
+                        maxDistance: 22.00,
+                        spacing: 18.00,
+                        showDots: true
+                    });
+                }
+
+                return () => {
+                    clearInterval(interval);
+                    if (vantaEffect) vantaEffect.destroy();
+                };
+            }, []);
+
+            return (
+                <section id="home" ref={vantaRef} className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+                    <div className="absolute inset-0 bg-darker/60 z-0 pointer-events-none"></div>
+
+                    <div className="container mx-auto px-6 relative z-10 text-center">
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 100, damping: 10 }}
+                            className="inline-block mb-6 px-4 py-1.5 rounded-full border border-neon-blue/30 bg-neon-blue/10 text-neon-blue text-sm font-semibold tracking-wide uppercase"
+                        >
+                            Available for hire
+                        </motion.div>
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="font-display font-black text-6xl md:text-8xl mb-4 tracking-tight"
+                        >
+                            RANIA <span className="text-gradient">CHAMLI</span>
+                        </motion.h1>
+                        <h2 className="text-xl md:text-3xl font-light text-gray-300 mb-6 h-10 typing-cursor">
+                            {text}
+                        </h2>
+                        <p className="max-w-2xl mx-auto text-gray-400 text-lg mb-10 leading-relaxed">
+                            "Passionate about building intelligent solutions."
+                        </p>
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 1 }}
+                            className="flex flex-col sm:flex-row justify-center gap-4"
+                        >
+                            <a href="#projects" className="px-8 py-4 bg-white text-darker font-bold rounded-lg hover:bg-gray-200 transition transform hover:-translate-y-1 hover:neon-shadow-blue flex items-center justify-center gap-2">
+                                <i className="fa-solid fa-layer-group"></i> View Projects
+                            </a>
+                            <a href="#contact" className="px-8 py-4 bg-transparent border border-gray-600 rounded-lg hover:border-neon-purple text-white transition transform hover:-translate-y-1 hover:bg-neon-purple/10 flex items-center justify-center gap-2">
+                                <i className="fa-regular fa-envelope"></i> Contact Me
+                            </a>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        };
+
+        const About = () => (
+            <FadeInSection id="about" className="bg-darker/50 border-y border-white/5">
+                <div className="container mx-auto px-6 max-w-4xl">
+                    <div className="flex flex-col md:flex-row items-center gap-12">
+                        <motion.div 
+                            className="w-full md:w-1/4 relative mx-auto md:mx-0"
+                            initial={{ x: -30, opacity: 0 }}
+                            whileInView={{ x: 0, opacity: 1 }}
+                            transition={{ duration: 0.8, type: "spring" }}
+                        >
+                            <div className="aspect-[3/4] rounded-2xl overflow-hidden glass-card p-2 neon-shadow-purple">
+                                <div className="w-full h-full rounded-xl overflow-hidden relative">
+                                    <img src="C:\Users\hp\Documents\rania\WhatsApp Image 2026-04-24 at 4.58.12 PM.jpeg" alt="Rania" className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-neon-blue/10 mix-blend-overlay pointer-events-none"></div>
+                                </div>
+                            </div>
+                            {/* Decorative element */}
+                            <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-neon-purple/40 blur-2xl rounded-full z-0 pointer-events-none"></div>
+                        </motion.div>
+                        <div className="w-full md:w-2/3">
+                            <h2 className="font-display text-4xl font-bold mb-6 flex items-center gap-3">
+                                <span className="text-neon-purple">//</span> About Me
+                            </h2>
+                            <p className="text-xl text-gray-300 leading-relaxed font-light">
+                                <span className="font-semibold text-white">Étudiante en Intelligence Artificielle</span>, passionnée par l’innovation technologique et le développement de solutions intelligentes.
+                            </p>
+                            <p className="text-lg text-gray-400 mt-4 leading-relaxed">
+                                Curieuse et motivée à transformer les idées complexes en projets concrets et impactants. Avec une forte base en algorithmique et en mathématiques appliquées, j'explore en permanence les nouvelles frontières de l'IA.
+                            </p>
+                            <div className="mt-8 flex gap-4">
+                                <a href="RANIA CHAMLI (CV).pdf" download="RANIA_CHAMLI_CV.pdf" className="glass px-6 py-3 rounded-lg text-sm font-semibold hover:border-neon-blue transition text-neon-blue flex items-center gap-2">
+                                    <i className="fa-solid fa-download"></i> Download CV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </FadeInSection>
+        );
+
+        const Skills = () => (
+            <FadeInSection id="skills">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="font-display text-4xl font-bold mb-4 flex items-center justify-center gap-4">
+                            Technical <span className="text-gradient">Arsenal</span>
+                            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Laptop.png" alt="Laptop" className="w-12 h-12 inline-block animate-bounce" />
+                        </h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-neon-blue to-neon-purple mx-auto rounded-full"></div>
+                    </div>
+                    <motion.div 
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.2 } } }}
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                    >
+                        {skillsData.map((category, idx) => (
+                            <motion.div 
+                                key={idx}
+                                variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
+                                className="glass-card p-6 border-t-2 border-t-transparent hover:border-t-neon-blue rounded-xl"
+                                whileHover={{ scale: 1.05 }}
+                            >
+                                <div className="text-3xl text-neon-blue mb-4"><i className={`fa-solid ${category.icon}`}></i></div>
+                                <h3 className="text-xl font-bold mb-6 text-white">{category.category}</h3>
+                                <div className="space-y-4">
+                                    {category.items.map((skill, sIdx) => (
+                                        <div key={sIdx}>
+                                            <div className="flex justify-between text-xs mb-1 text-gray-400 font-semibold tracking-wide">
+                                                <span>{skill.name}</span>
+                                                <span>{skill.progress}%</span>
+                                            </div>
+                                            <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+                                                <motion.div 
+                                                    initial={{ width: 0 }}
+                                                    whileInView={{ width: `${skill.progress}%` }}
+                                                    transition={{ duration: 1, delay: 0.2 }}
+                                                    className="h-full bg-gradient-to-r from-neon-blue to-blue-500 rounded-full"
+                                                ></motion.div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </FadeInSection>
+        );
+
+        const Projects = () => {
+            const [filter, setFilter] = useState("All");
+            const filters = ["All", "AI", "Data", "Vision"];
+
+            const filteredProjects = filter === "All" 
+                ? projectsData 
+                : projectsData.filter(p => p.category === filter);
+
+            return (
+                <FadeInSection id="projects" className="bg-darker/50 border-y border-white/5">
+                    <div className="container mx-auto px-6">
+                        <div className="text-center mb-12">
+                            <h2 className="font-display text-4xl font-bold mb-4 flex items-center justify-center gap-4">
+                                Featured <span className="text-gradient">Projects</span>
+                                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Rocket.png" alt="Rocket" className="w-12 h-12 inline-block animate-bounce" style={{ animationDelay: "0.5s" }} />
+                            </h2>
+                            <p className="text-gray-400">A selection of my recent works and experiments.</p>
+                        </div>
+
+                        {/* Filter Bar */}
+                        <div className="flex justify-center flex-wrap gap-3 mb-10">
+                            {filters.map(f => (
+                                <button 
+                                    key={f}
+                                    onClick={() => setFilter(f)}
+                                    className={`px-5 py-2 rounded-full text-sm font-semibold transition ${filter === f ? 'bg-neon-purple text-white shadow-[0_0_15px_rgba(188,19,254,0.4)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                                >
+                                    {f}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Projects Grid */}
+                        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <AnimatePresence>
+                                {filteredProjects.map((proj, idx) => (
+                                    <motion.div 
+                                        key={proj.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        transition={{ duration: 0.4, delay: idx * 0.1 }}
+                                        className="glass-card rounded-2xl overflow-hidden group border border-gray-800"
+                                    >
+                                        <div className="p-8">
+                                            <div className="text-4xl text-neon-purple mb-6 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                                                <i className={`fa-solid ${proj.icon}`}></i>
+                                            </div>
+                                            <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-neon-blue transition">{proj.title}</h3>
+                                            <p className="text-gray-400 mb-6 line-clamp-3">{proj.desc}</p>
+                                            
+                                            <div className="flex flex-wrap gap-2 mb-8">
+                                                {proj.stack.map(tech => (
+                                                    <span key={tech} className="text-xs px-3 py-1 rounded-full bg-gray-800/80 text-gray-300 border border-gray-700">
+                                                        {tech}
+                                                    </span>
+                                                ))}
+                                            </div>
+
+                                            <button className="text-sm font-bold text-white flex items-center gap-2 group-hover:text-neon-blue transition">
+                                                View Details <i className="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition"></i>
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </motion.div>
+                    </div>
+                </FadeInSection>
+            );
+        };
+
+        const ExperienceEducation = () => (
+            <FadeInSection id="experience">
+                <div className="container mx-auto px-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                        {/* Experience */}
+                        <div>
+                            <h2 className="font-display text-3xl font-bold mb-8 flex items-center gap-3">
+                                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Briefcase.png" alt="Briefcase" className="w-10 h-10 animate-pulse" /> Experience
+                            </h2>
+                            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-neon-blue before:to-transparent">
+                                {experienceData.map((exp, idx) => (
+                                    <div key={idx} className="relative pl-8 md:pl-0">
+                                        <div className="md:w-1/2 md:pr-8 md:text-right md:ml-auto md:odd:mr-auto md:odd:ml-0 md:odd:pl-0 md:odd:text-right md:even:text-left md:even:pl-8 md:even:pr-0">
+                                            <div className="absolute left-0 w-5 h-5 bg-darker border-2 border-neon-blue rounded-full md:left-1/2 md:transform md:-translate-x-1/2 mt-1.5 z-10 shadow-[0_0_10px_rgba(0,243,255,0.5)]"></div>
+                                            <div className="glass-card p-6 rounded-xl hover:border-neon-blue transition duration-300">
+                                                <span className="text-xs font-bold text-neon-blue mb-1 block">{exp.date}</span>
+                                                <h3 className="text-xl font-bold text-white mb-1">{exp.role}</h3>
+                                                <h4 className="text-sm text-gray-400 mb-4 font-semibold">{exp.company}</h4>
+                                                <p className="text-gray-400 text-sm">{exp.desc}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Education */}
+                        <div>
+                            <h2 className="font-display text-3xl font-bold mb-8 flex items-center gap-3">
+                                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Graduation%20Cap.png" alt="Education" className="w-10 h-10 animate-pulse" style={{ animationDelay: "0.2s" }} /> Education
+                            </h2>
+                            <div className="glass-card p-8 rounded-2xl relative overflow-hidden border-l-4 border-l-neon-purple">
+                                <span className="absolute top-0 right-0 bg-neon-purple text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Ongoing (2024)</span>
+                                <h3 className="text-2xl font-bold text-white mb-2">DUT in Artificial Intelligence</h3>
+                                <h4 className="text-lg text-gray-300 mb-6">École Supérieure de Technologie – Tétouan</h4>
+                                <div className="flex gap-4 mb-8">
+                                    <span className="text-3xl text-gray-700"><i className="fa-solid fa-university"></i></span>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="flex items-start gap-3 text-sm text-gray-400">
+                                        <i className="fa-solid fa-check text-neon-purple mt-1"></i>
+                                        <span>Focus on Machine Learning, Computer Vision & Data Science.</span>
+                                    </div>
+                                    <div className="flex items-start gap-3 text-sm text-gray-400">
+                                        <i className="fa-solid fa-check text-neon-purple mt-1"></i>
+                                        <span>Software dev methodologies (OOP, MERISE, UML).</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Languages */}
+                            <h2 className="font-display text-2xl font-bold mt-12 mb-6 flex items-center gap-3">
+                                <i className="fa-solid fa-language text-gray-400"></i> Languages
+                            </h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                {languagesData.map((lang, idx) => (
+                                    <div key={idx} className="glass p-4 rounded-xl text-center">
+                                        <h4 className="text-lg font-bold text-white">{lang.lang}</h4>
+                                        <p className="text-xs text-neon-blue mt-1 font-semibold">{lang.level}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </FadeInSection>
+        );
+
+        const Certifications = () => (
+            <FadeInSection id="certifications" className="py-16">
+                <div className="container mx-auto px-6 text-center">
+                    <h2 className="font-display text-3xl font-bold mb-10 flex items-center justify-center gap-3">
+                        Licenses & <span className="text-gradient">Certifications</span>
+                        <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Military%20Medal.png" alt="Medal" className="w-12 h-12 animate-bounce" />
+                    </h2>
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {certsData.map((cert, idx) => (
+                            <motion.div 
+                                key={idx}
+                                whileHover={{ y: -5, scale: 1.05 }}
+                                className={`relative p-0.5 rounded-xl bg-gradient-to-br ${cert.color}`}
+                            >
+                                <div className="bg-darker px-6 py-4 rounded-[10px] h-full flex flex-col items-center justify-center min-w-[200px]">
+                                    <i className="fa-solid fa-certificate text-2xl mb-3 text-gray-300"></i>
+                                    <h4 className="text-sm font-bold text-white mb-1.5">{cert.title}</h4>
+                                    <span className="text-xs text-gray-400">{cert.issuer}</span>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </FadeInSection>
+        );
+
+        const Contact = () => (
+            <FadeInSection id="contact" className="bg-darker/80 border-t border-white/5 pt-20 pb-24">
+                <div className="container mx-auto px-6 max-w-5xl">
+                    <div className="text-center mb-12">
+                        <h2 className="font-display text-4xl font-bold mb-4 flex items-center justify-center gap-3">
+                            Get In <span className="text-gradient">Touch</span>
+                            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Telephone%20Receiver.png" alt="Phone" className="w-10 h-10 animate-bounce" style={{ animationDelay: '1s' }} />
+                        </h2>
+                        <p className="text-gray-400">Let's build something intelligent together.</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-6">
+                            <div className="glass-card p-6 rounded-xl flex items-center gap-5 hover:border-neon-blue transition">
+                                <div className="w-12 h-12 rounded-full bg-neon-blue/10 flex items-center justify-center text-neon-blue text-xl">
+                                    <i className="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm text-gray-400 mb-1">Email</h4>
+                                    <a href="mailto:rania.chamli@etu.uae.ac.ma" className="text-white hover:text-neon-blue font-semibold">rania.chamli@etu.uae.ac.ma</a>
+                                </div>
+                            </div>
+                            
+                            <div className="glass-card p-6 rounded-xl flex items-center gap-5 hover:border-neon-purple transition">
+                                <div className="w-12 h-12 rounded-full bg-neon-purple/10 flex items-center justify-center text-neon-purple text-xl">
+                                    <i className="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm text-gray-400 mb-1">Phone</h4>
+                                    <a href="tel:0720540875" className="text-white hover:text-neon-purple font-semibold">0720540875</a>
+                                </div>
+                            </div>
+
+                            <div className="glass-card p-6 rounded-xl flex items-center gap-5 hover:border-blue-500 transition">
+                                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 text-xl">
+                                    <i className="fa-brands fa-linkedin-in"></i>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm text-gray-400 mb-1">LinkedIn</h4>
+                                    <a href="https://www.linkedin.com/in/rania-chamli-04212334b" target="_blank" className="text-white hover:text-blue-500 font-semibold text-sm break-all">linkedin.com/in/rania-chamli</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form className="glass-card p-8 rounded-2xl flex flex-col gap-4">
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Your Name</label>
+                                <input type="text" className="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-neon-blue transition" placeholder="John Doe" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Your Email</label>
+                                <input type="email" className="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-neon-blue transition" placeholder="john@example.com" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Message</label>
+                                <textarea rows="4" className="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-neon-blue transition resize-none" placeholder="How can I help you?"></textarea>
+                            </div>
+                            <button type="button" className="w-full bg-gradient-to-r from-neon-blue to-blue-600 text-darker font-bold py-4 rounded-lg mt-2 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] transition transform hover:-translate-y-0.5">
+                                Send Message <i className="fa-solid fa-paper-plane ml-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </FadeInSection>
+        );
+
+        const Footer = () => (
+            <footer className="py-8 text-center text-sm font-semibold text-gray-500 border-t border-white/5">
+                <p>&copy; 2024 Rania Chamli. Designed & Built intelligently.</p>
+            </footer>
+        );
+
+        const Chatbot = () => {
+            const [open, setOpen] = useState(false);
+            const [messages, setMessages] = useState([
+                { text: "Hi! I'm Rania's virtual assistant. How can I help you learn more about her skills or projects?", isBot: true }
+            ]);
+            const [input, setInput] = useState("");
+
+            const handleSend = (e) => {
+                e.preventDefault();
+                if(!input.trim()) return;
+                
+                const userMsg = input;
+                setMessages(prev => [...prev, { text: userMsg, isBot: false }]);
+                setInput("");
+
+                // Simple Mock AI Logic
+                setTimeout(() => {
+                    let botReply = "I'm a simple demo bot! Reach out to Rania directly via the contact form for detailed inquiries.";
+                    if(userMsg.toLowerCase().includes("skill") || userMsg.toLowerCase().includes("python")) {
+                        botReply = "Rania excels in Python, Machine Learning, Computer Vision, and overall Data Science concepts. Check out the Skills section above!";
+                    } else if(userMsg.toLowerCase().includes("project")) {
+                        botReply = "She has built impressive projects like an Emotion Detector, Machine Learning Predictor, and Eye Tracking App. They are detailed in the Projects section.";
+                    }
+                    
+                    setMessages(prev => [...prev, { text: botReply, isBot: true }]);
+                }, 800);
+            };
+
+            return (
+                <div className="fixed bottom-6 right-6 z-50">
+                    <AnimatePresence>
+                        {open && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                                className="mb-4 w-80 glass-card rounded-2xl overflow-hidden shadow-2xl border border-gray-700/50 flex flex-col"
+                            >
+                                <div className="bg-gradient-to-r from-neon-purple to-purple-800 p-4 flex justify-between items-center text-white">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                                            <i className="fa-solid fa-robot"></i>
+                                        </div>
+                                        <h3 className="font-bold text-sm">Rania's AI Bot</h3>
+                                    </div>
+                                    <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition">
+                                        <i className="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <div className="h-64 overflow-y-auto p-4 flex flex-col gap-3 bg-darker/90">
+                                    {messages.map((msg, i) => (
+                                        <div key={i} className={`max-w-[85%] rounded-xl p-3 text-sm ${msg.isBot ? 'bg-gray-800 text-gray-200 self-start rounded-tl-sm' : 'bg-neon-purple/20 text-white self-end rounded-tr-sm border border-neon-purple/30'}`}>
+                                            {msg.text}
+                                        </div>
+                                    ))}
+                                </div>
+                                <form onSubmit={handleSend} className="p-3 bg-dark border-t border-gray-800 flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        value={input}
+                                        onChange={e => setInput(e.target.value)}
+                                        placeholder="Ask a question..." 
+                                        className="flex-1 bg-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-neon-purple"
+                                    />
+                                    <button type="submit" className="bg-neon-purple hover:bg-purple-600 text-white rounded-lg px-3 py-2 transition">
+                                        <i className="fa-solid fa-paper-plane text-xs"></i>
+                                    </button>
+                                </form>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                    
+                    <button 
+                        onClick={() => setOpen(!open)}
+                        className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl text-white shadow-[0_0_20px_rgba(188,19,254,0.4)] transition transform hover:scale-110 ${open ? 'bg-gray-800' : 'bg-gradient-to-r from-neon-purple to-purple-600'}`}
+                    >
+                        <i className={`fa-solid ${open ? 'fa-angle-down' : 'fa-comment-dots'}`}></i>
+                    </button>
+                </div>
+            );
+        };
+
+        const FloatingSocials = () => (
+            <div className="hidden lg:flex fixed left-6 bottom-0 flex-col gap-5 after:w-px after:h-24 after:bg-gray-600 after:mx-auto after:mt-2 z-40">
+                <a href="https://www.linkedin.com/in/rania-chamli-04212334b" target="_blank" className="text-gray-400 hover:text-blue-500 hover:-translate-y-1 transition transform text-xl">
+                    <i className="fa-brands fa-linkedin"></i>
+                </a>
+                <a href="mailto:rania.chamli@etu.uae.ac.ma" className="text-gray-400 hover:text-neon-blue hover:-translate-y-1 transition transform text-xl">
+                    <i className="fa-solid fa-envelope"></i>
+                </a>
+            </div>
+        );
+
+        const App = () => {
+            const [isDark, setDark] = useState(true); // Default dark theme logic
+
+            useEffect(() => {
+                const initTilt = () => {
+                    if (window.VanillaTilt) {
+                        window.VanillaTilt.init(document.querySelectorAll(".glass-card"), {
+                            max: 15,
+                            speed: 400,
+                            glare: true,
+                            "max-glare": 0.2,
+                            scale: 1.02
+                        });
+                    }
+                };
+                // Initial init
+                setTimeout(initTilt, 500);
+                // Re-init on click of filters
+                window.addEventListener('click', () => setTimeout(initTilt, 400));
+            }, []);
+
+            return (
+                <div className={`min-h-screen ${isDark ? 'dark' : ''}`}>
+                    <NavBar isDark={isDark} setDark={setDark} />
+                    <FloatingSocials />
+                    <main>
+                        <Hero />
+                        <About />
+                        <Skills />
+                        <Projects />
+                        <ExperienceEducation />
+                        <Certifications />
+                        <Contact />
+                    </main>
+                    <Footer />
+                    <Chatbot />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
